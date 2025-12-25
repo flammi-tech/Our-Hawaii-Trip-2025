@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>夏威夷 2025-2026 跨年之旅</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; background-color: #fdfbf7; color: #1e293b; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- Icons ---
+    const Icons = {
+      Palm: () => (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 21a9 9 0 100-18 9 9 0 000 18z M12 3v18M3 12h18" /></svg>
+      ),
+      Map: () => (
+        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+      ),
+      Hotel: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+      ),
+      Check: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+      ),
+      Link: () => (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+      )
+    };
+
+    // --- Data ---
+    const HOTELS = [
+      { dates: '12/29 - 1/1', name: 'OUTRIGGER Reef Waikiki Beach Resort', location: '威基基 (Waikiki)', tag: 'Beachfront' },
+      { dates: '1/1 - 1/3', name: 'Embassy Suites by Hilton Oahu Kapolei', location: '西岸 (West Coast)', tag: 'Family Suite' },
+      { dates: '1/3 - 1/6', name: 'Hilton Grand Vacations Club Kings’ Land', location: '大岛 (Big Island)', tag: 'Resort' },
+      { dates: '1/6 - 1/7', name: 'Ala Moana Honolulu', location: '威基基 (Waikiki)', tag: 'Shopping' }
+    ];
+
+    const CHECKLIST = [
+      { id: 'evus', label: '打印 EVUS 和机票行程单' },
+      { id: 'license', label: '带好日本驾照 + 国际驾照 (IDP)' },
+      { id: 'diamond-head', label: '抢 12/31 钻石头山门票 (8:00 AM)' },
+      { id: 'reservations', label: '预订 Chief\'s Luau (1/2) 和 魔鬼鱼夜潜 (1/3)' },
+      { id: 'booster', label: '购买儿童汽车增高垫 (Booster)' },
+      { id: 'jacket', label: '带厚外套 (Mauna Kea 观星用)' }
+    ];
+
+    const ITINERARY = [
+      { day: 1, date: '12/29', title: '抵达威基基 (Waikiki)', locationQuery: 'Outrigger Reef Waikiki Beach Resort', items: [
+        { time: '上午', activity: '抵达 HNL 机场，打车去酒店', note: '开启夏威夷时光' },
+        { time: '午餐', activity: 'Steak Shack', note: '经典的沙滩牛排饭', link: 'https://www.steakshackwaikiki.com/' },
+        { time: '下午', activity: '酒店泳池或 Kalia Beach 踩水', note: '初步调整时差' },
+        { time: '晚餐', activity: 'Monkeypod Kitchen', note: '尝试 Mai Tai 鸡尾酒', link: 'https://www.monkeypodkitchen.com/' }
+      ], tasks: ['去 ABC Store 买水母衣和防晒霜'] },
+      { day: 2, date: '12/30', title: '海龟峡谷 (Turtle Canyon)', locationQuery: 'Turtle Canyon Snorkel', items: [
+        { time: '09:00', activity: 'Holokai Catamaran 船潜', note: '寻找海龟', link: 'https://holokaicatamaran.com/' },
+        { time: '中午', activity: 'Musubi Cafe Iyasume 饭团', note: '人气餐点', link: 'https://www.iyasumehawaii.com/' },
+        { time: '下午', activity: '威基基逛街或午睡', note: '休息恢复体力' },
+        { time: '晚餐', activity: 'Marukame Udon 或 Paia Fish Market', link: 'https://www.marugameudon.com/' }
+      ]},
+      { day: 3, date: '12/31', title: '钻石头山 & 跨年烟花', locationQuery: 'Diamond Head State Monument', items: [
+        { time: '08:00', activity: '爬钻石头山', note: '需提前预约', link: 'https://dlnr.hawaii.gov/dsp/parks/oahu/diamond-head-state-monument/' },
+        { time: '午餐', activity: 'Pioneer Saloon 这里的盒饭非常棒', link: 'http://pioneer-saloon.net/' },
+        { time: '14:00', activity: '全家强制午睡', note: '为跨年夜储备能量' },
+        { time: '23:55', activity: '沙滩看跨年烟花', note: '迎来 2026 年！' }
+      ]},
+      { day: 4, date: '1/1', title: '搬家 & 西岸奥特莱斯', locationQuery: 'Waikele Premium Outlets', items: [
+        { time: '上午', activity: '取车 (Enterprise)', note: '前往西岸' },
+        { time: '中午', activity: 'Waikele Outlets 购物', note: '新年开购', link: 'https://www.premiumoutlets.com/outlet/waikele' },
+        { time: '下午', activity: '入住 Embassy Suites Kapolei', note: '泻湖浮潜' }
+      ]},
+      { day: 5, date: '1/2', title: '珍珠港 & 鲁奥晚宴', locationQuery: 'USS Missouri', items: [
+        { time: '上午', activity: '密苏里号战列舰', link: 'https://www.ussmissouri.org/' },
+        { time: '14:45', activity: '亚利桑那号纪念馆', link: 'https://www.nps.gov/valr/index.htm' },
+        { time: '17:30', activity: 'Chief\'s Luau 晚宴', link: 'https://www.chiefsluau.com/' }
+      ]},
+      { day: 6, date: '1/3', title: '登陆大岛 (Big Island)', locationQuery: 'Keauhou Bay', items: [
+        { time: '上午', activity: '飞往大岛 Kona (KOA)', note: '机场取车' },
+        { time: '下午', activity: '入住 Kings\' Land', note: '玩酒店滑梯泳池' },
+        { time: '晚上', activity: '魔鬼鱼夜潜', note: '震撼体验', link: 'https://www.mantarayadv.com/' }
+      ]},
+      { day: 7, date: '1/4', title: '火山国家公园', locationQuery: 'Hawaii Volcanoes National Park', items: [
+        { time: '下午', activity: '火山公园深度游', link: 'https://www.nps.gov/havo/index.htm' },
+        { time: '16:30', activity: '黑沙滩看海龟', note: '普纳鲁吾黑沙滩' }
+      ]},
+      { day: 8, date: '1/5', title: '观鲸 & Mauna Kea 星空', locationQuery: 'Mauna Kea', items: [
+        { time: '上午', activity: '海岸观鲸', note: '运气大考验' },
+        { time: '16:00', activity: 'Mauna Kea 游客中心', note: '穿上羽绒服', link: 'https://www.ifa.hawaii.edu/info/vis/' },
+        { time: '18:00', activity: '看云海日落 & 观星', note: '顶级体验' }
+      ]},
+      { day: 9, date: '1/6', title: '重返檀香山', locationQuery: 'Ala Moana Center', items: [
+        { time: '上午', activity: 'UCC 咖啡园', link: 'https://www.ucc-hawaii.com/' },
+        { time: '下午', activity: 'Ala Moana Center', note: '最后补货', link: 'https://www.alamoanacenter.com/' }
+      ]},
+      { day: 10, date: '1/7', title: '返程东京', locationQuery: 'HNL Airport', items: [
+        { time: '中午', activity: '飞回东京', note: '旅程圆满结束' }
+      ]}
+    ];
+
+    // --- Components ---
+    const Checklist = () => {
+      const [checkedItems, setCheckedItems] = useState({});
+      useEffect(() => {
+        const saved = localStorage.getItem('hawaii_trip_checklist');
+        if (saved) setCheckedItems(JSON.parse(saved));
+      }, []);
+      const toggleItem = (id) => {
+        const newChecked = { ...checkedItems, [id]: !checkedItems[id] };
+        setCheckedItems(newChecked);
+        localStorage.setItem('hawaii_trip_checklist', JSON.stringify(newChecked));
+      };
+      return (
+        <section id="checklist" className="px-4 py-8 max-w-4xl mx-auto">
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-amber-100">
+            <div className="bg-emerald-500 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-white text-xl font-bold flex items-center gap-2">
+                <Icons.Check /> 行前检查清单
+              </h2>
+              <span className="text-emerald-50 text-sm">
+                {Object.values(checkedItems).filter(Boolean).length} / {CHECKLIST.length} 完成
+              </span>
+            </div>
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {CHECKLIST.map((item) => (
+                <div key={item.id} onClick={() => toggleItem(item.id)} className={`flex items-center p-3 rounded-xl cursor-pointer transition-all ${checkedItems[item.id] ? 'bg-emerald-50 opacity-60' : 'bg-amber-50 hover:bg-amber-100'}`}>
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 ${checkedItems[item.id] ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white border-amber-300'}`}>
+                    {checkedItems[item.id] && <Icons.Check />}
+                  </div>
+                  <span className={`text-sm ${checkedItems[item.id] ? 'line-through text-slate-400' : 'text-slate-700 font-medium'}`}>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    const ItineraryCard = ({ day }) => {
+      const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(day.locationQuery)}`;
+      return (
+        <div className="bg-white rounded-3xl shadow-sm border border-amber-100 overflow-hidden mb-8 hover:shadow-lg transition-shadow duration-300">
+          <div className="flex flex-col md:flex-row">
+            <div className="bg-sky-500 md:w-32 p-4 flex md:flex-col items-center justify-center text-white shrink-0">
+              <span className="text-sm font-bold opacity-80 mr-2 md:mr-0">DAY</span>
+              <span className="text-4xl font-serif font-bold">{day.day}</span>
+              <span className="text-sm mt-1 ml-2 md:ml-0 font-bold bg-sky-600 px-2 py-0.5 rounded">{day.date}</span>
+            </div>
+            <div className="p-6 flex-grow">
+              <div className="flex flex-wrap justify-between items-start gap-2 mb-6">
+                <h2 className="text-2xl font-bold text-slate-800 font-serif">{day.title}</h2>
+                <a href={mapLink} target="_blank" rel="noopener" className="flex items-center text-xs font-bold text-sky-600 bg-sky-50 hover:bg-sky-100 px-3 py-1.5 rounded-full transition-colors border border-sky-100">
+                  <Icons.Map /> 地图导航
+                </a>
+              </div>
+              <div className="space-y-4 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100">
+                {day.items.map((item, idx) => (
+                  <div key={idx} className="pl-8 relative">
+                    <div className="absolute left-1.5 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-sky-500 bg-white z-10"></div>
+                    <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
+                      <span className="text-xs font-bold text-sky-600 sm:w-16 shrink-0">{item.time}</span>
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className="text-slate-800 font-semibold">{item.activity}</span>
+                          {item.link && (
+                            <a href={item.link} target="_blank" rel="noopener" className="text-sky-400 hover:text-sky-600 transition-colors">
+                              <Icons.Link />
+                            </a>
+                          )}
+                        </div>
+                        {item.note && <span className="text-sm text-slate-500 italic">{item.note}</span>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {day.tasks && (
+                <div className="mt-6 p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                  <p className="text-xs font-bold text-amber-700 uppercase mb-2">💡 特别提醒</p>
+                  <ul className="list-disc list-inside text-sm text-amber-800">
+                    {day.tasks.map((task, idx) => <li key={idx}>{task}</li>)}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const App = () => {
+      return (
+        <div className="min-h-screen pb-20">
+          <header className="relative h-[65vh] flex items-center justify-center overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=2000" className="absolute inset-0 w-full h-full object-cover scale-105" alt="Hawaii" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-[#fdfbf7]"></div>
+            <div className="relative text-center px-4 animate-fade-in-up">
+              <div className="inline-block bg-white/30 backdrop-blur-md px-4 py-1.5 rounded-full text-white text-sm font-bold tracking-[0.2em] mb-4 border border-white/40 uppercase shadow-lg">Hawaii 2025-2026</div>
+              <h1 className="text-5xl md:text-7xl font-serif font-bold text-white drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)] mb-2">夏威夷跨年亲子之旅</h1>
+              <h2 className="text-xl md:text-2xl font-light text-sky-200 mb-6 tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">ハワイ年越し親子旅行 2025-2026</h2>
+              <p className="text-lg text-white font-medium max-w-xl mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] hidden md:block">从威基基的璀璨烟花到大岛的震撼星空，开启一场充满热带风情的亲子探索。</p>
+            </div>
+          </header>
+
+          <section className="px-4 -mt-16 relative z-20 max-w-6xl mx-auto mb-12">
+            <div className="bg-white/80 backdrop-blur-lg p-6 rounded-[2.5rem] shadow-2xl border border-white/50">
+              <h2 className="text-slate-800 font-bold mb-4 flex items-center gap-2 px-2"><Icons.Hotel /> 酒店安排</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {HOTELS.map((hotel, idx) => (
+                  <div key={idx} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <span className="text-[10px] font-bold text-sky-600 uppercase bg-sky-50 px-2 py-1 rounded mb-2 inline-block">{hotel.dates}</span>
+                    <h3 className="font-bold text-slate-800 text-sm mb-1">{hotel.name}</h3>
+                    <p className="text-[10px] text-slate-500">{hotel.location}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <Checklist />
+
+          <div className="text-center py-12"><h2 className="text-3xl font-serif font-bold text-slate-800 mb-2">每日详细行程</h2><div className="w-24 h-1 bg-sky-500 mx-auto rounded-full"></div></div>
+
+          <section id="itinerary" className="px-4 max-w-4xl mx-auto">
+            {ITINERARY.map(day => <ItineraryCard key={day.day} day={day} />)}
+          </section>
+
+          <footer className="mt-20 py-16 bg-slate-900 text-center text-slate-400">
+            <div className="flex justify-center mb-6 text-sky-400"><Icons.Palm /></div>
+            <p className="font-serif text-white text-xl mb-2">Aloha Hawaii</p>
+            <div className="mb-8 space-y-1">
+              <p className="text-sm">让我们拥有一个难忘的 2026 跨年亲子假期！</p>
+              <p className="text-xs opacity-70">忘れられない2026年の年越し親子旅行にしましょう！</p>
+            </div>
+            <div className="flex justify-center">
+              <a href="#" className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white px-6 py-3 rounded-full border border-white/10 text-sm font-semibold tracking-wide transition-all"><Icons.Link /> 查看后续旅行日记</a>
+            </div>
+          </footer>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
